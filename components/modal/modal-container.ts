@@ -4,7 +4,9 @@
  */
 
 import { AnimationEvent } from '@angular/animations';
-import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
+import { ConfigurableFocusTrapFactory, FocusTrap } from '@angular/cdk/a11y';
+import { DragDrop } from '@angular/cdk/drag-drop';
+import { DragRef } from '@angular/cdk/drag-drop/drag-ref';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { BasePortalOutlet, CdkPortalOutlet, ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { ChangeDetectorRef, ComponentRef, ElementRef, EmbeddedViewRef, EventEmitter, NgZone, OnDestroy, Renderer2 } from '@angular/core';
@@ -16,6 +18,7 @@ import { takeUntil } from 'rxjs/operators';
 import { FADE_CLASS_NAME_MAP, MODAL_MASK_CLASS_NAME, NZ_CONFIG_COMPONENT_NAME, ZOOM_CLASS_NAME_MAP } from './modal-config';
 
 import { NzModalRef } from './modal-ref';
+import { NzModalTitleComponent } from './modal-title.component';
 import { ModalOptions } from './modal-types';
 import { getValueWithConfig } from './utils';
 
@@ -26,6 +29,7 @@ export function throwNzModalContentAlreadyAttachedError(): never {
 export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
   portalOutlet!: CdkPortalOutlet;
   modalElementRef!: ElementRef<HTMLDivElement>;
+  modalHeaderRef!: NzModalTitleComponent;
 
   animationStateChanged = new EventEmitter<AnimationEvent>();
   containerClick = new EventEmitter<void>();
@@ -39,6 +43,7 @@ export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
   isStringContent: boolean = false;
   private elementFocusedBeforeModalWasOpened: HTMLElement | null = null;
   private focusTrap!: FocusTrap;
+  private dragRef!: DragRef;
   private latestMousedownTarget: HTMLElement | null = null;
   private oldMaskStyle: { [key: string]: string } | null = null;
   protected destroy$ = new Subject();
@@ -57,12 +62,13 @@ export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
 
   constructor(
     protected elementRef: ElementRef,
-    protected focusTrapFactory: FocusTrapFactory,
+    protected focusTrapFactory: ConfigurableFocusTrapFactory,
     public cdr: ChangeDetectorRef,
     protected render: Renderer2,
     protected zone: NgZone,
     protected overlayRef: OverlayRef,
     protected nzConfigService: NzConfigService,
+    protected dragDrop: DragDrop,
     public config: ModalOptions,
     document?: NzSafeAny,
     protected animationType?: string
@@ -103,7 +109,7 @@ export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
       throwNzModalContentAlreadyAttachedError();
     }
     this.savePreviouslyFocusedElement();
-    this.setModalTransformOrigin();
+    // this.setModalTransformOrigin();
     return this.portalOutlet.attachComponentPortal(portal);
   }
 
@@ -113,6 +119,22 @@ export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
     }
     this.savePreviouslyFocusedElement();
     return this.portalOutlet.attachTemplatePortal(portal);
+  }
+
+  attachStringContent(): void {
+    this.savePreviouslyFocusedElement();
+  }
+
+  registerDrag(): DragRef {
+    this.dragRef = this.dragDrop.createDrag(this.modalElementRef.nativeElement.lastChild! as HTMLElement);
+    this.setDragHandler();
+    return this.dragRef;
+  }
+
+  private setDragHandler(): void {
+    if (this.modalHeaderRef) {
+      this.dragRef.withHandles([this.modalHeaderRef!.elementRef]);
+    }
   }
 
   getNativeElement(): HTMLElement {

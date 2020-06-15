@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
@@ -33,6 +34,7 @@ import { NzModalService } from './modal.service';
     NzI18nModule,
     NzButtonModule,
     NzIconModule,
+    DragDropModule,
     NzPipesModule,
     NzNoAnimationModule
   ],

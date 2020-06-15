@@ -3,7 +3,8 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { FocusTrapFactory } from '@angular/cdk/a11y';
+import { ConfigurableFocusTrapFactory } from '@angular/cdk/a11y';
+import { DragDrop } from '@angular/cdk/drag-drop';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
@@ -114,7 +115,8 @@ export class NzModalConfirmContainerComponent extends BaseModalContainer {
   constructor(
     private i18n: NzI18nService,
     elementRef: ElementRef,
-    focusTrapFactory: FocusTrapFactory,
+    focusTrapFactory: ConfigurableFocusTrapFactory,
+    dragDrop: DragDrop,
     cdr: ChangeDetectorRef,
     render: Renderer2,
     zone: NgZone,
@@ -124,7 +126,7 @@ export class NzModalConfirmContainerComponent extends BaseModalContainer {
     @Optional() @Inject(DOCUMENT) document: NzSafeAny,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationType: string
   ) {
-    super(elementRef, focusTrapFactory, cdr, render, zone, overlayRef, nzConfigService, config, document, animationType);
+    super(elementRef, focusTrapFactory, cdr, render, zone, overlayRef, nzConfigService, dragDrop, config, document, animationType);
     this.i18n.localeChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.locale = this.i18n.getLocaleData('Modal');
     });
