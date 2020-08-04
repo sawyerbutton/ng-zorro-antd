@@ -125,9 +125,12 @@ export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
     this.savePreviouslyFocusedElement();
   }
 
-  registerDrag(): DragRef {
+  registerDrag(boundaryELement?: HTMLElement | ElementRef): DragRef {
     this.dragRef = this.dragDrop.createDrag(this.modalElementRef.nativeElement.lastChild! as HTMLElement);
     this.setDragHandler();
+    if (boundaryELement) {
+      this.setBoundaryElement(boundaryELement);
+    }
     return this.dragRef;
   }
 
@@ -135,6 +138,10 @@ export class BaseModalContainer extends BasePortalOutlet implements OnDestroy {
     if (this.modalHeaderRef) {
       this.dragRef.withHandles([this.modalHeaderRef!.elementRef]);
     }
+  }
+
+  private setBoundaryElement(boundaryElement: HTMLElement | ElementRef): void {
+    this.dragRef.withBoundaryElement(boundaryElement);
   }
 
   getNativeElement(): HTMLElement {

@@ -4,7 +4,7 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { EventEmitter, TemplateRef, Type, ViewContainerRef } from '@angular/core';
+import { ElementRef, EventEmitter, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { NzButtonShape, NzButtonSize, NzButtonType } from 'ng-zorro-antd/button';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 
@@ -26,6 +26,7 @@ export class ModalOptions<T = NzSafeAny, R = NzSafeAny> {
   nzOkDisabled?: boolean = false;
   nzCancelDisabled?: boolean = false;
   nzDraggable?: boolean = false;
+  nzBoundaryElement?: HTMLElement | ElementRef;
   nzCancelLoading?: boolean = false;
   nzNoAnimation?: boolean = false;
   nzAutofocus?: 'ok' | 'cancel' | 'auto' | null = 'auto';

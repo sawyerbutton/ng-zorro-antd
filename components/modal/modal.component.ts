@@ -9,6 +9,7 @@ import {
   ChangeDetectorRef,
   Component,
   ContentChild,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -35,7 +36,11 @@ import { getConfigFromComponent } from './utils';
 @Component({
   selector: 'nz-modal',
   exportAs: 'nzModal',
-  template: ` <ng-template><ng-content></ng-content></ng-template> `,
+  template: `
+    <ng-template>
+      <ng-content></ng-content>
+    </ng-template>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NzModalComponent<T = NzSafeAny, R = NzSafeAny> implements OnChanges, NzModalLegacyAPI<T, R> {
@@ -82,6 +87,7 @@ export class NzModalComponent<T = NzSafeAny, R = NzSafeAny> implements OnChanges
   @Input() nzIconType: string = 'question-circle'; // Confirm Modal ONLY
   @Input() nzModalType: ModalTypes = 'default';
   @Input() nzAutofocus: 'ok' | 'cancel' | 'auto' | null = 'auto';
+  @Input() nzBoundaryElement?: HTMLElement | ElementRef;
 
   // TODO(@hsuanxyz) Input will not be supported
   @Input()
@@ -98,12 +104,14 @@ export class NzModalComponent<T = NzSafeAny, R = NzSafeAny> implements OnChanges
   @Output() readonly nzVisibleChange = new EventEmitter<boolean>();
 
   @ViewChild(TemplateRef, { static: true }) contentTemplateRef!: TemplateRef<{}>;
+
   @ContentChild(NzModalFooterDirective)
   set modalFooter(value: NzModalFooterDirective) {
     if (value && value.templateRef) {
       this.setFooterWithTemplate(value.templateRef);
     }
   }
+
   private modalRef: NzModalRef | null = null;
 
   get afterOpen(): Observable<void> {

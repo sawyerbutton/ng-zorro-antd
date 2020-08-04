@@ -1,6 +1,6 @@
 /* declarations: NzModalDraggableComponent */
 
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd';
 
 @Component({
@@ -16,7 +16,7 @@ import { NzModalService } from 'ng-zorro-antd';
     <button nz-button nzType="primary" (click)="createMultiComponentModal()">Multi Modal</button>
     <nz-modal
       [(nzVisible)]="isVisible"
-      nzDraggable="true"
+      [nzDraggable]="draggable"
       nzWrapClassName="draggable-modal"
       nzTitle="Draggable Modal"
       (nzOnCancel)="handleCancel()"
@@ -32,16 +32,23 @@ import { NzModalService } from 'ng-zorro-antd';
       ::ng-deep .multi-modal {
         pointer-events: none;
       }
+
       ::ng-deep .draggable-modal .ant-modal-header {
         cursor: move;
       }
     `
   ]
 })
-export class NzDemoModalDraggableComponent {
+export class NzDemoModalDraggableComponent implements AfterViewInit {
   isVisible = false;
+  boundaryElement: HTMLElement | ElementRef | undefined = undefined;
+  draggable = true;
 
-  constructor(private modal: NzModalService) {}
+  constructor(private modal: NzModalService, private el: ElementRef) {}
+
+  ngAfterViewInit(): void {
+    this.boundaryElement = this.el.nativeElement;
+  }
 
   showModal(): void {
     this.isVisible = true;
@@ -81,12 +88,14 @@ export class NzDemoModalDraggableComponent {
   }
 
   createMultiComponentModal(): void {
+    console.log(this.boundaryElement);
     const modalRef1 = this.modal.create({
       nzTitle: 'Draggable Modal1',
       nzDraggable: true,
       nzMask: false,
       nzMaskClosable: false,
       nzContent: NzModalDraggableComponent,
+      nzBoundaryElement: this.boundaryElement,
       nzWrapClassName: 'multi-modal draggable-modal',
       nzMaskStyle: { pointerEvents: 'none' }
     });
@@ -97,6 +106,7 @@ export class NzDemoModalDraggableComponent {
       nzMask: false,
       nzMaskClosable: false,
       nzContent: NzModalDraggableComponent,
+      nzBoundaryElement: this.boundaryElement,
       nzStyle: { top: `70px`, left: `100px` },
       nzWrapClassName: 'multi-modal draggable-modal',
       nzMaskStyle: { pointerEvents: 'none' }

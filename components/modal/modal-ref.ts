@@ -178,7 +178,11 @@ export class NzModalRef<T = NzSafeAny, R = NzSafeAny> implements NzModalLegacyAP
 
   private registerDragIfDraggable(): void {
     if (this.config.nzDraggable && !this.dragRef) {
-      this.dragRef = this.containerInstance.registerDrag();
+      if (this.config.nzBoundaryElement) {
+        this.dragRef = this.containerInstance.registerDrag(this.config.nzBoundaryElement);
+      } else {
+        this.dragRef = this.containerInstance.registerDrag();
+      }
     } else if (!this.config.nzDraggable) {
       this.dragRef?.dispose();
     }
